@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import TodoFunctional from './TodoFunctional';
 import Count from './Count';
+import { getNextKey } from '../util';
 
 // eslint-disable-next-line react/function-component-definition, react/prop-types
 const FunctionalInput = ({ name }) => {
@@ -8,7 +10,10 @@ const FunctionalInput = ({ name }) => {
     one to store the To-Do's
     and the other to store the value of the input field
   */
-  const [todos, setTodos] = useState(['Just some demo tasks', 'As an example']);
+  const [todos, setTodos] = useState([
+    { key: 0, text: 'Just some demo tasks' },
+    { key: 1, text: 'As an example' },
+  ]);
   const [inputVal, setInputVal] = useState('');
 
   const handleInputChange = (e) => {
@@ -17,12 +22,21 @@ const FunctionalInput = ({ name }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setTodos((todo) => [...todo, inputVal]);
+    setTodos((todo) => [...todo, { key: getNextKey(todos), text: inputVal }]);
     setInputVal('');
   };
 
+  const handleTodoChange = (key, newValue) => {
+    setTodos(
+      todos.map((todo) => {
+        if (todo.key === key) return { ...todo, text: newValue };
+        else return todo;
+      }),
+    );
+  };
+
   const handleDelete = (key) => {
-    setTodos(todos.filter((todo) => todo !== key));
+    setTodos(todos.filter((todo) => todo.key !== key));
   };
 
   return (
@@ -43,12 +57,12 @@ const FunctionalInput = ({ name }) => {
       {/* The list of all the To-Do's, displayed */}
       <ul>
         {todos.map((todo) => (
-          <div key={todo} className="list-item">
-            <li>{todo}</li>
-            <button type="button" onClick={() => handleDelete(todo)}>
-              Delete
-            </button>
-          </div>
+          <TodoFunctional
+            key={todo.key}
+            value={todo.text}
+            onChange={(newValue) => handleTodoChange(todo.key, newValue)}
+            onDelete={() => handleDelete(todo.key)}
+          />
         ))}
       </ul>
       <Count value={todos.length} />
