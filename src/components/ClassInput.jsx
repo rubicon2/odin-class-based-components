@@ -44,7 +44,6 @@ class ClassInput extends Component {
         <h3>{this.props.name}</h3>
         {/* The input field to enter To-Do's */}
         <form onSubmit={this.handleSubmit}>
-          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label htmlFor="task-entry">Enter a task: </label>
           <input
             type="text"
