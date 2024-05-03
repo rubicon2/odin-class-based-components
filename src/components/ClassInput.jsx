@@ -1,18 +1,24 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import Count from './Count';
+import Todo from './Todo';
+import { getNextKey } from '../util';
 
 class ClassInput extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      todos: ['Just some demo tasks', 'As an example'],
+      todos: [
+        { key: 0, text: 'Just some demo tasks' },
+        { key: 1, text: 'As an example' },
+      ],
       inputVal: '',
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleTodoChange = this.handleTodoChange.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
   }
 
@@ -26,15 +32,28 @@ class ClassInput extends Component {
   handleSubmit(e) {
     e.preventDefault();
     this.setState((state) => ({
-      todos: state.todos.concat(state.inputVal),
+      todos: state.todos.concat({
+        key: getNextKey(state.todos),
+        text: state.inputVal,
+      }),
       inputVal: '',
     }));
+  }
+
+  handleTodoChange(key, newValue) {
+    this.setState({
+      ...this.state,
+      todos: this.state.todos.map((todo) => {
+        if (todo.key === key) return { ...todo, text: newValue };
+        else return todo;
+      }),
+    });
   }
 
   handleDelete(key) {
     this.setState({
       ...this.state,
-      todos: this.state.todos.filter((todo) => todo !== key),
+      todos: this.state.todos.filter((todo) => todo.key !== key),
     });
   }
 
@@ -58,12 +77,12 @@ class ClassInput extends Component {
         {/* The list of all the To-Do's, displayed */}
         <ul>
           {this.state.todos.map((todo) => (
-            <div key={todo} className="list-item">
-              <li>{todo}</li>
-              <button type="button" onClick={() => this.handleDelete(todo)}>
-                Delete
-              </button>
-            </div>
+            <Todo
+              key={todo.key}
+              value={todo.text}
+              onChange={(newValue) => this.handleTodoChange(todo.key, newValue)}
+              onDelete={() => this.handleDelete(todo.key)}
+            />
           ))}
         </ul>
         <Count value={this.state.todos.length} />
