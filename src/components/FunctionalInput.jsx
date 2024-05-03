@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Count from './Count';
 
 // eslint-disable-next-line react/function-component-definition, react/prop-types
 const FunctionalInput = ({ name }) => {
@@ -50,6 +51,7 @@ const FunctionalInput = ({ name }) => {
           </div>
         ))}
       </ul>
+      <Count value={todos.length} />
     </section>
   );
 };
